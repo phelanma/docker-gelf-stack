@@ -1,0 +1,1 @@
+# docker-gelf-stack
