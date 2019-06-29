@@ -1,0 +1,48 @@
+version: "3.7"
+
+services:
+  grafana:
+    image: grafana/grafana:6.2.5
+    environment:
+      # - GF_DATABASE_URL
+      # - GF_AUTH_LDAP=true
+      - GF_SERVER_HTTP_PORT=4001
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,briangann-gauge-panel,natel-plotly-panel,grafana-simple-json-datasource
+    networks:
+      - ui-network-001
+      - monitoring-network-001
+    labels:
+      - "com.example.apptype=ui"
+    volumes:
+      - grafana_storage:/var/lib/grafana
+    deploy:
+      replicas: 1
+      update_config:
+        failure_action: rollback
+        parallelism: 2
+        delay: 10s
+        order: stop-first
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 50M
+        reservations:
+          cpus: '0.25'
+          memory: 20M
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      labels:
+        - "com.example.apptype=ui"
+        
+networks:
+  ui-network-001:
+    external: true
+  monitoring-network-001:
+    external: true
+
+volumes:
+  grafana_storage:
+    external: true
