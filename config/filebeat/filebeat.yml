@@ -1,0 +1,16 @@
+filebeat.inputs:
+- type: log
+  paths:
+    - /test/logs/*
+  fields_under_root: true
+  json.keys_under_root: true
+  json.add_error_key: true
+  json.message_key: log
+# filebeat.config.inputs:
+#  enabled: true
+#  path: configs/*.yml
+#  reload.enabled: true
+#  reload.period: 10s
+output.logstash:
+  hosts: ["logstash:5044"]
+  index: log-tester

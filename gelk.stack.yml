@@ -1,6 +1,37 @@
 version: "3.7"
 
 services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.2.0
+    environment:
+      - discovery.type=single-node
+    networks:    
+      - database-network-001
+      - monitoring-network-001
+    volumes:
+      - elasticsearch_storage:/usr/share/elasticsearch/data
+    deploy:
+      replicas: 1
+      update_config:
+        failure_action: rollback
+        parallelism: 2
+        delay: 10s
+        order: stop-first
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 50M
+        reservations:
+          cpus: '0.25'
+          memory: 20M
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      labels:
+        - "com.example.apptype=db"
+
   grafana:
     image: grafana/grafana:6.2.5
     environment:
